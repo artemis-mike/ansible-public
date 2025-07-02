@@ -1,0 +1,24 @@
+- name: Check the docker-compose.yaml of service {{ service_name }} for a definition of traefik_proxy network
+  shell: |
+    if [ $(sed -n '/traefik_proxy:/,/external: true/p' docker-compose.yaml | wc -l) -gt 0 ]; then
+      echo present
+    else
+      echo missing
+    fi
+  args:
+    chdir: "/root/{{ service_name }}/"
+  register: traefik_exists
+
+  # Run role traefik when it's part of the service's docker-compose file
+- include_role: 
+    name: traefik
+  when: traefik_exists.stdout.strip() == "present"
+
+- include_role:
+    name: docker-common
+  when: traefik_exists.stdout.strip() == "present"
+
+  # When including this role we need to have the traefik network set up before starting the actual service and need to rest service_name
+  # back to the primary_service_name that was initially called.
+- name: Flush handlers
+  meta: flush_handlers

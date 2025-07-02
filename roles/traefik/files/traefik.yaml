@@ -1,0 +1,30 @@
+api:
+  dashboard: true
+  insecure: true
+  debug: false
+
+providers:
+  docker:
+    exposedByDefault: false
+
+entryPoints:
+  http:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: https
+
+  https:
+    address: ":443"
+    transport:
+      respondingTimeouts:
+        readTimeout: "0s"
+
+certificatesResolvers:
+  production:
+    acme:
+      dnschallenge:
+        provider: <provider-name>
+      email: <email>
+      storage: /letsencrypt/acme.json

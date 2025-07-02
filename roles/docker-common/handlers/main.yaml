@@ -1,0 +1,7 @@
+#SPDX-License-Identifier: MIT-0
+---
+# handlers file for docker-common
+- name: "Restart containers"
+  shell:
+    chdir: "/root/{{ service_name }}/"
+    cmd: "docker compose down && docker compose up -d"

@@ -1,0 +1,10 @@
+- name: Check for the usage of traefik in a services docker-compose file
+  hosts: all
+  gather_facts: no
+  become: yes
+
+  vars:
+    service_name: pi-hole # just for testing
+
+  roles:
+    - check-traefik

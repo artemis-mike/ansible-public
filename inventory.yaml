@@ -1,0 +1,13 @@
+all:
+  children:
+      pi:
+        hosts:
+          192.168.xxx.yyy # some rasperry-pi
+
+      server:
+        hosts:
+          192.168.yyy.zzz # another more powerfull machine
+
+      test-vm:
+        hosts:
+          192.168.zzz.abc # more of a test host, eg a local vm if you want

@@ -1,0 +1,24 @@
+services:
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: always
+    ports:
+      - "80:80"     # HTTP
+      - "443:443"   # HTTPS
+      - "8080:8080" # Traefik GUI
+    environment:
+      # Follow https://go-acme.github.io/lego/dns/cloudflare/
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+      - CF_ZONE_API_TOKEN=${CF_ZONE_API_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik.yaml:/etc/traefik/traefik.yaml
+      - ./letsencrypt:/letsencrypt
+    networks:
+      - proxy
+
+
+networks:
+  proxy:
+    driver: bridge

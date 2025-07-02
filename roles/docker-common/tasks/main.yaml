@@ -1,0 +1,49 @@
+#SPDX-License-Identifier: MIT-0
+---
+# tasks file for docker-common
+
+# Variables need to be defined in the tasks/main of the calling role. E.g.
+# - set_fact:
+#     service_name: "{{ role_name }}"
+#     service_files_path_prefix: "{{ role_path }}"
+
+- name: Gather the package facts
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: Run tasks/setup_docker.yaml from role setup_docker
+  ansible.builtin.import_role:
+    name: host_setup
+    tasks_from: setup_docker
+  when: "'docker-ce' not in ansible_facts.packages"
+
+- name: "Create directory /root/{{ service_name }}/"
+  file:
+    path: "/root/{{ service_name }}/"
+    state: directory
+
+- name: "Create backup of /root/{{ service_name }}/ at /"
+  copy:
+    src: "/root/{{ service_name }}/"
+    dest: "/root/ansible-snapshot-{{ service_name }}/"
+    remote_src: true
+    
+- name: Copy files to host
+  copy:
+    src: "{{ service_files_path_prefix }}/files/"
+    dest: "/root/{{ service_name }}/"
+    mode: 0600
+  notify: Restart containers
+
+- name: Check if host-specific docker-compose-file exists
+  stat:
+    path: /root/{{ service_name }}/{{ ansible_hostname }}.docker-compose.yaml
+  register: host_specific_compose
+
+- name: Overwrite docker-compose.yaml if host-specific file exists
+  copy:
+    src: "{{ service_files_path_prefix }}/files/{{ ansible_hostname }}.docker-compose.yaml"
+    dest: "/root/{{ service_name }}/docker-compose.yaml"
+    mode: 0600
+  when: host_specific_compose.stat.exists
+  notify: Restart containers

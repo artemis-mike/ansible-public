@@ -1,0 +1,9 @@
+- name: Setup pi-hole docker containers
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  roles:  # Among other, automatically run tasks/main and handlers/main of these roles.
+    - pi-hole
+    - docker-common
+    - check-traefik

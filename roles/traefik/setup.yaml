@@ -1,0 +1,8 @@
+- name: Setup traefik docker containers
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  roles:  # Among other, automatically run tasks/main and handlers/main of these roles.
+    - traefik
+    - docker-common

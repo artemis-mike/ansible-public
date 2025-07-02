@@ -1,0 +1,9 @@
+- name: Set facts and notify traefik handlers
+  set_fact:
+    primary_service_name: "{{ service_name }}"
+    service_name: "{{ role_name }}"
+    service_files_path_prefix: "{{ role_path }}"
+  changed_when: true
+  notify: 
+    - Restart traefik containers    # When including this role from check-trafik, we need to have the traefik network set up before starting the actual service
+    - Reset service_name

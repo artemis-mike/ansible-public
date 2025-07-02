@@ -1,0 +1,8 @@
+- name: Restart traefik containers
+  shell:
+    chdir: "/root/traefik/"
+    cmd: "docker compose down && docker compose up -d"
+
+- name: Reset service_name
+  set_fact:
+    service_name: "{{ primary_service_name }}"
